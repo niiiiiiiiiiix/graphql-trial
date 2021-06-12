@@ -11,13 +11,13 @@ const {
 } = require("graphql");
 const app = express();
 
-const authors = [
+let authors = [
   { id: 1, name: "J. K. Rowling" },
   { id: 2, name: "J. R. R. Tolkien" },
   { id: 3, name: "Brent Weeks" },
 ];
 
-const books = [
+let books = [
   { id: 1, name: "Harry Potter and the Chamber of Secrets", authorId: 1 },
   { id: 2, name: "Harry Potter and the Prisoner of Azkaban", authorId: 1 },
   { id: 3, name: "Harry Potter and the Goblet of Fire", authorId: 1 },
@@ -127,6 +127,22 @@ const RootMutationType = new GraphQLObjectType({
       resolve: (parent, args) => {
         const author = { id: authors.length + 1, name: args.name };
         authors.push(author);
+        return author;
+      },
+    },
+    deleteAuthor: {
+      type: AuthorType,
+      description: "Delete an author",
+      args: {
+        id: { type: GraphQLNonNull(GraphQLInt) },
+      },
+      resolve: (parent, args) => {
+        const authorName = authors.find((author) => author.id === args.id).name;
+        const author = {
+          id: args.id,
+          name: authorName,
+        };
+        authors = authors.filter((author) => author.id !== args.id);
         return author;
       },
     },
